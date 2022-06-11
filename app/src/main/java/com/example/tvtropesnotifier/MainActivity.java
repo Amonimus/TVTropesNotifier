@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.d("DBG", "LOOP");
+                                fetchMessages();
                             }
                         });
                         try {
@@ -126,11 +126,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public int compare(Map<String, String> object1, Map<String, String> object2) {
                 try {
-                    Log.d("COMPARE ", object1.get("timeStamp"));
-                    Log.d("WITH ", object2.get("timeStamp"));
                     return f.parse(dateConverter(object1.get("timeStamp"))).compareTo(f.parse(dateConverter(object2.get("timeStamp"))));
                 } catch (ParseException e) {
-                    Log.d("EXCEPT ", "FAIL");
                     e.printStackTrace();
                     return 0;
                 }
