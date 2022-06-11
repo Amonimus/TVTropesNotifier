@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="tvt_blue">#006BB1</color>
+    <color name="tvt_dark">#2D323F</color>
+    <color name="tvt_light">#DEDEDE</color>
+    <color name="tvt_darkblue">#28323F</color>
+    <color name="tvt_yellow">#F9BF29</color>
+    <color name="tvt_lightgrey">#CCCDCB</color>
+    <color name="tvt_grey">#535b65</color>
+</resources>

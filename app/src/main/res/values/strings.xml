@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">TV Tropes Notifier</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="notification_name">New Message!</string>
+    <string name="notification_text">Message text.</string>
+    <string name="test_message_title">Test Message Title</string>
+    <string name="test_message_text">Test Message Text</string>
+    <string name="notification_button_text">Test Notification</string>
+    <string name="test_message_button_text">Generate Test Message</string>
+    <string name="quicklink_troper">Troper Page</string>
+    <string name="quicklink_todo">To Do List</string>
+    <string name="quicklink_pm">Private Messages</string>
+    <string name="quicklink_fp">Followed Pages</string>
+    <string name="quicklink_ft">Followed Threads</string>
+    <string name="quicklink_qr">Queries</string>
+    <string name="quicklink_profile">Profile Settings</string>
+    <string name="quicklink_att">Ask The Tropers</string>
+    <string name="quicklink_tg">Trope Finder</string>
+    <string name="quicklink_ykts">You Know That Show</string>
+    <string name="quicklink_wl">Wishlist</string>
+    <string name="quicklink_bugs">Bugs</string>
+    <string name="quicklink_tlp">Trope Launch Pad</string>
+    <string name="quicklink_trs">Trope Repair Shop</string>
+    <string name="quicklink_ip">Image Picking</string>
+    <string name="quicklink_cl">Cut List</string>
+    <string name="quicklink_admin">Administrivia</string>
+    <string name="quicklink_tfr">Text Formatting Rules</string>
+</resources>
