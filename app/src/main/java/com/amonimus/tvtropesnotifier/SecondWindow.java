@@ -1,4 +1,4 @@
-package com.example.tvtropesnotifier;
+package com.amonimus.tvtropesnotifier;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -8,12 +8,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.amonimus.tvtropesnotifier.R;
+
 public class SecondWindow extends AppCompatActivity {
+    GlobalFunctions globalfuncs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_secondary_window);
+
+        globalfuncs = new GlobalFunctions(this);
     }
 
     public void openLink(View view) {
@@ -44,8 +49,6 @@ public class SecondWindow extends AppCompatActivity {
             case "Administrivia" : target_url = "https://tvtropes.org/pmwiki/pmwiki.php/Main/Administrivia"; break;
             case "Text Formatting Rules" : target_url = "https://tvtropes.org/pmwiki/pmwiki.php/Administrivia/TextFormattingRules"; break;
         }
-        Uri uri = Uri.parse(target_url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        globalfuncs.openLink(target_url);
     }
 }

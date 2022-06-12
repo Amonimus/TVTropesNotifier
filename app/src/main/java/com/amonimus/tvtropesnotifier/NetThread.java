@@ -1,7 +1,11 @@
-package com.example.tvtropesnotifier;
+package com.amonimus.tvtropesnotifier;
 
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,30 +14,30 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class NetThread extends Thread {
-    String returnstring = "";
-    String USERNAME;
-    String PASSWORD;
-    Map<String, String> loginCookies;
-    List data = new ArrayList<Map>();
+class LoginThread extends Thread {
+    private String USERNAME;
+    private String PASSWORD;
+    private Map<String, String> loginCookies;
+    private Boolean result;
 
-    public NetThread(String USERNAME, String PASSWORD) {
+    public LoginThread(String USERNAME, String PASSWORD) {
         this.USERNAME = USERNAME;
         this.PASSWORD = PASSWORD;
     }
 
-    public void run() {
-        login(USERNAME, PASSWORD);
-        data = fetchPages();
-        data.addAll(fetchForums());
+    public void run(){
+        result = login();
     }
 
-    public void login(String USERNAME, String PASSWORD) {
+    public Boolean login() {
+        Log.d("-- DBG", "Trying to login");
         try {
+            Log.d("-- DBG", PASSWORD);
             Connection.Response loginResponse = Jsoup.connect("https://tvtropes.org/pmwiki/validate.php")
                     .data("ajax", "1")
                     .data("handle", USERNAME)
@@ -42,13 +46,48 @@ class NetThread extends Thread {
                     .method(Connection.Method.POST)
                     .execute();
             loginCookies = loginResponse.cookies();
-        } catch (IOException e) {
+
+            String json = loginResponse.body();
+            Log.d("--JSON", json);
+            JSONObject object = (JSONObject) new JSONTokener(json).nextValue();
+            Boolean success = "1".equals(object.getString("success"));
+            String msg = object.getString("msg").split(",")[0];
+            return success;
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public List fetchPages() {
+    public Boolean returnValue(){
+        return result;
+    }
+
+    public Map returnCookies(){
+        return loginCookies;
+    }
+}
+
+class NetThread extends Thread {
+    private String USERNAME;
+    private String PASSWORD;
+    private Map<String, String> loginCookies;
+    private List data = new ArrayList<Map>();
+
+    public NetThread(String USERNAME, String PASSWORD, Map<String, String> cookies) {
+        this.USERNAME = USERNAME;
+        this.PASSWORD = PASSWORD;
+        loginCookies = cookies;
+    }
+
+    public void run() {
+        data = fetchPages();
+        data.addAll(fetchForums());
+    }
+
+    private List fetchPages() {
         Document doc = null;
+        String pageType = "Page";
         String timeStamp;
         String pageTitle;
         String troperName;
@@ -59,7 +98,7 @@ class NetThread extends Thread {
                     .cookies(loginCookies)
                     .get();
             if (doc.title().contains("LoginPrompt")) {
-                returnstring = "Not logged in";
+                //
             } else {
                 Elements tr_list = doc.getElementsByTag("tr");
                 for (Element tr : tr_list) {
@@ -69,14 +108,44 @@ class NetThread extends Thread {
                         timeStamp = firstCol.text().replace("Unfollow ", "").replace("at ", "");
                         pageTitle = firstCol.nextElementSibling().text().replaceAll("\\[\\d+\\] ", "");
                         troperName = firstCol.nextElementSibling().nextElementSibling().text();
-                        if (pageTitle.equals("Main: Ask The Tropers")) {
-                            pageTitle = "Ask The Tropers";
-                            pageLink = "https://tvtropes.org/pmwiki/query.php?type=att";
-                        } else {
-                            pageLink = "https://tvtropes.org/" + firstCol.nextElementSibling().nextElementSibling().nextElementSibling().getElementsByTag("a").attr("href");
+                        switch (pageTitle) {
+                            case "Main: Ask The Tropers": {
+                                pageTitle = "Ask The Tropers";
+                                pageLink = "https://tvtropes.org/pmwiki/query.php?type=att";
+                                pageType = "Query";
+                                break;
+                            }
+                            case "Main: Query Wishlist": {
+                                pageTitle = "Query Wishlist";
+                                pageLink = "https://tvtropes.org/pmwiki/query.php?type=wl";
+                                pageType = "Query";
+                                break;
+                            }
+                            case "Main: Query Bugs": {
+                                pageTitle = "Query Bugs";
+                                pageLink = "https://tvtropes.org/pmwiki/query.php?type=bug";
+                                pageType = "Query";
+                                break;
+                            }
+                            case "Main: Trope Finder": {
+                                pageTitle = "Trope Finder";
+                                pageLink = "https://tvtropes.org/pmwiki/query.php?type=tf";
+                                pageType = "Query";
+                                break;
+                            }
+                            case "Main You Know That Show...": {
+                                pageTitle = "You Know That Show...";
+                                pageLink = "https://tvtropes.org/pmwiki/query.php?type=ykts";
+                                pageType = "Query";
+                                break;
+                            }
+                            default: {
+                                pageLink = "https://tvtropes.org/" + firstCol.nextElementSibling().nextElementSibling().nextElementSibling().getElementsByTag("a").attr("href");
+                                pageType = "Page";
+                            }
                         }
                         Map<String, String> messagePack = new HashMap<String, String>();
-                        messagePack.put("pageType", "Page");
+                        messagePack.put("pageType", pageType);
                         messagePack.put("timeStamp", timeStamp);
                         messagePack.put("pageTitle", pageTitle);
                         messagePack.put("troperName", troperName);
@@ -85,7 +154,6 @@ class NetThread extends Thread {
                         Log.d("FETCH", "Package complete");
                     }
                 }
-                returnstring = "Logged in";
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,7 +161,7 @@ class NetThread extends Thread {
         return fullPackage;
     }
 
-    public List fetchForums() {
+    private List fetchForums() {
         Document doc = null;
         String timeStamp;
         String pageTitle;
@@ -105,7 +173,7 @@ class NetThread extends Thread {
                     .cookies(loginCookies)
                     .get();
             if (doc.title().contains("LoginPrompt")) {
-                returnstring = "Not logged in";
+                //
             } else {
                 Elements tr_list = doc.getElementsByTag("tr");
                 for (Element tr : tr_list) {
@@ -132,7 +200,6 @@ class NetThread extends Thread {
                         }
                     }
                 }
-                returnstring = "Logged in";
             }
         } catch (IOException e) {
             e.printStackTrace();

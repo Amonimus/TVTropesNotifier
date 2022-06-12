@@ -1,11 +1,8 @@
-package com.example.tvtropesnotifier;
+package com.amonimus.tvtropesnotifier;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,10 +12,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-public class MessageActions {
-    public int notifier_ID = 0;
+import com.amonimus.tvtropesnotifier.R;
 
-    public void createNotification(MainActivity activity, String msgType, String notifText, String notifLink) {
+public class MessageActions {
+    private MainActivity activity;
+    private GlobalFunctions globalfuncs;
+    private int notifier_ID;
+    MessageActions(MainActivity activity) {
+        this.activity = activity;
+        globalfuncs = new GlobalFunctions(activity);
+        notifier_ID = 0;
+    }
+
+    private void createNotification(String msgType, String notifText, String notifLink) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(activity, "TVTN Notification");
         builder.setGroup("TVTN Notification Group");
         if (msgType == "Page") {
@@ -44,7 +50,7 @@ public class MessageActions {
         notifier_ID++;
     }
 
-    public void buildMessage(MainActivity activity, LinearLayout container, String pageType, String pageTitle, String pageLink, String troperName, String timeStamp) {
+    private void buildMessage(LinearLayout container, String pageType, String pageTitle, String pageLink, String troperName, String timeStamp) {
         int getContainerWidth = LinearLayout.LayoutParams.MATCH_PARENT;
         LinearLayout messageBlock = new LinearLayout(activity);
         messageBlock.setOrientation(LinearLayout.VERTICAL);
@@ -72,7 +78,8 @@ public class MessageActions {
         messageBlock.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                activity.openLink(pageLink);
+                globalfuncs.openLink(pageLink);
+                activity.refreshManual(view);
             }
         });
 
@@ -97,9 +104,11 @@ public class MessageActions {
         container.addView(messageBlock);
     }
 
-    public void generateMessage(MainActivity activity, String msgType, String pageTitle, String pageLink, String troperName, String timeStamp) {
+    public void generateMessage(String msgType, String pageTitle, String pageLink, String troperName, String timeStamp) {
         LinearLayout container = activity.findViewById(R.id.messageContainer);
-        buildMessage(activity, container, msgType, pageTitle, pageLink, troperName, timeStamp);
-        createNotification(activity, msgType, pageTitle+" by "+ troperName, pageLink);
+        buildMessage(container, msgType, pageTitle, pageLink, troperName, timeStamp);
+        if (globalfuncs.getNotif()) {
+            createNotification(msgType, pageTitle + " by " + troperName, pageLink);
+        }
     }
 }

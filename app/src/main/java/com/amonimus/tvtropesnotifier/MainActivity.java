@@ -1,47 +1,37 @@
-package com.example.tvtropesnotifier;
+package com.amonimus.tvtropesnotifier;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
+    private GlobalFunctions globalfuncs;
+    private BackgroundProcess background;
+    private MessageActions actions;
+    private Thread repeatTaskThread;
+    TextView debugTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,21 +42,22 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
+
+        globalfuncs = new GlobalFunctions(this);
+        background = new BackgroundProcess(this);
+        actions = new MessageActions(this);
+        debugTextView = this.findViewById(R.id.debugTextView);
+        background.testLogin();
         loopTask();
     }
-
-    int refresh_rate = 1;
-    BackgroundProcess background = new BackgroundProcess();
-    MessageActions actions = new MessageActions();
-    Thread repeatTaskThread;
 
     public void loopTask() {
         repeatTaskThread = new Thread() {
             public void run() {
                 while (true) {
-                    if (refresh_rate < 1) {
+                    if (globalfuncs.getRefreshRate() < 1 && globalfuncs.getSigninStatus()) {
                         try {
-                            Thread.sleep(refresh_rate * 1000);
+                            Thread.sleep(globalfuncs.getRefreshRate() * 1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -78,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         try {
-                            Thread.sleep(refresh_rate * 60000);
+                            Thread.sleep(globalfuncs.getRefreshRate() * 60000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -87,12 +78,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         repeatTaskThread.start();
-    }
-
-    public void openLink(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
     }
 
     public void clearMessages() {
@@ -105,9 +90,6 @@ public class MainActivity extends AppCompatActivity {
     //Button actions
     public void openMenu(View view) {
         Intent intent = new Intent(this, SecondWindow.class);
-        //EditText editText = (EditText) findViewById(R.id.editTextTextPersonName);
-        //String message = editText.getText().toString();
-        //intent.putExtra(CROSSACTIVITY_MESSAGE, message);
         startActivity(intent);
     }
 
@@ -117,16 +99,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logoButtonClick(View view){
-        openLink("https://tvtropes.org/");
+        globalfuncs.openLink("https://tvtropes.org/");
     }
 
     public void datesorting(List list){
+        boolean sortlatest = globalfuncs.getSorting();
         DateFormat f = new SimpleDateFormat("MMM dd yyyy, hh:mm aa");
         Collections.sort(list, new Comparator<Map<String, String>>(){
             @Override
             public int compare(Map<String, String> object1, Map<String, String> object2) {
                 try {
-                    return f.parse(dateConverter(object1.get("timeStamp"))).compareTo(f.parse(dateConverter(object2.get("timeStamp"))));
+                    if (sortlatest) {
+                        return f.parse(dateConverter(object2.get("timeStamp"))).compareTo(f.parse(dateConverter(object1.get("timeStamp"))));
+                    } else {
+                        return f.parse(dateConverter(object1.get("timeStamp"))).compareTo(f.parse(dateConverter(object2.get("timeStamp"))));
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                     return 0;
@@ -167,15 +154,23 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchMessages(){
         clearMessages();
-        List<Map> data = background.fetch();
-        datesorting(data);
-        for (Map<String, String> item : data){
-            String msgType = item.get("pageType");
-            String pageTitle = item.get("pageTitle");
-            String pageLink = item.get("pageLink");
-            String troperName = item.get("troperName");
-            String timeStamp = dateConverter(item.get("timeStamp"));
-            actions.generateMessage(this, msgType, pageTitle, pageLink, troperName, timeStamp);
+        if (globalfuncs.getSigninStatus()) {
+            List<Map> data = background.fetch();
+            if (data != null) {
+                datesorting(data);
+                for (Map<String, String> item : data) {
+                    String msgType = item.get("pageType");
+                    String pageTitle = item.get("pageTitle");
+                    String pageLink = item.get("pageLink");
+                    String troperName = item.get("troperName");
+                    String timeStamp = dateConverter(item.get("timeStamp"));
+                    actions.generateMessage(msgType, pageTitle, pageLink, troperName, timeStamp);
+                }
+            } else {
+                debugTextView.setText("Failed to recieve data.");
+            }
+        } else {
+            debugTextView.setText("Not logged in.");
         }
     }
 
@@ -184,13 +179,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void generateTestMessage(View view) {
-        refresh_rate = 0;
         clearMessages();
         String msgType = "Test";
         String pageTitle = "Administrivia / Welcome to TV Tropes";
         String pageLink = "https://tvtropes.org/pmwiki/pmwiki.php/Administrivia/WelcomeToTVTropes";
         String troperName = "This and That Troper";
         String timeStamp = dateConverter("11th Jun 11:55 PM");
-        actions.generateMessage(this, msgType, pageTitle, pageLink, troperName, timeStamp);
+        actions.generateMessage(msgType, pageTitle, pageLink, troperName, timeStamp);
     }
 }

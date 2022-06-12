@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.tvtropesnotifier">
+    package="com.amonimus.tvtropesnotifier">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,7 +19,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.amonimus.tvtropesnotifier.SettingsActivity"
             android:exported="false" />
 
         <uses-library
@@ -27,7 +27,7 @@
             android:required="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.amonimus.tvtropesnotifier.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,12 +36,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SecondWindow"
+            android:name="com.amonimus.tvtropesnotifier.SecondWindow"
             android:exported="false"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="com.amonimus.tvtropesnotifier.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.amonimus.tvtropesnotifier.MainActivity" />
         </activity>
     </application>
 

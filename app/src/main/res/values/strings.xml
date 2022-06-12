@@ -26,4 +26,7 @@
     <string name="quicklink_cl">Cut List</string>
     <string name="quicklink_admin">Administrivia</string>
     <string name="quicklink_tfr">Text Formatting Rules</string>
+    <string name="STORAGE_LOGIN">Username</string>
+    <string name="STORAGE_PASSWORD">Swordfish</string>
+    <string name="credits">TV Tropes Notifier app by <a href="https://tvtropes.org/pmwiki/pmwiki.php/Tropers/Amonimus">Amonimus</a>, 2022.\nFor <a href="https://tvtropes.org/pmwiki/about.php">TV Tropes</a>.</string>
 </resources>

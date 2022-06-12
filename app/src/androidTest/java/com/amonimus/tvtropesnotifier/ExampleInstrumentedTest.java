@@ -1,4 +1,4 @@
-package com.example.tvtropesnotifier;
+package com.amonimus.tvtropesnotifier;
 
 import android.content.Context;
 

@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"
-    tools:context=".SecondWindow">
+    tools:context="com.amonimus.tvtropesnotifier.SecondWindow">
 
     <ScrollView
-        android:id="@+id/scrollView2"
+        android:id="@+id/PageScroller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,9 +17,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/PageContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#787878"
+            android:background="@color/tvt_grey"
             android:orientation="vertical">
 
             <View
@@ -43,7 +44,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -66,7 +67,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -96,7 +97,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -119,7 +120,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/singinButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -149,7 +150,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/registerButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -172,7 +173,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button6"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -202,7 +203,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button7"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -247,7 +248,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button8"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -270,7 +271,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button9"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -300,7 +301,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button10"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -323,7 +324,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button11"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -353,7 +354,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button12"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -398,7 +399,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button13"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -421,7 +422,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button14"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -451,7 +452,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button15"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -497,7 +498,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button16"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -520,7 +521,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/button17"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
@@ -551,7 +552,7 @@
                     android:weightSum="2">
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/button18"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="8dp"
